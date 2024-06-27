@@ -1,0 +1,336 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+{% load core_extras %}
+{% block title %}{% trans "All Recordings" %}{% endblock %}
+{% block content %}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<div class="container my-4">
+  <nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url "core:home" %}">{% trans "Home" %}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{% trans "All Recordings" %} </li>
+  </ol>
+</nav>
+  <section class="mb-4">
+    <div class="card">
+      <div class="card-header py-3">
+        <h3 class="mb-0 text-center"><strong>{% trans "All Recordings" %} 
+          <small class="text-muted " style="font-weight:normal;font-size: 60%;">
+          {{zoom_app_obj.last_refresh|date:"SHORT_DATETIME_FORMAT"}}
+            
+          </small>
+
+          <a href="?reload-page=true">
+          <button type="button" style="float:right;" class="btn btn-rounded btn-primary">
+            {% trans "Refresh Recordings" %}
+          </button> 
+          </a>
+          </strong>
+        </h3>
+      </div>
+      <div class="card-body">
+        <form >
+          <div style="display: inline-flex;flex-wrap: wrap;align-content: space-between;align-items: baseline;">
+            <div class="form-group" style="display: inline-block;">
+              <input type="text" id="SearchBox" placeholder="Search" style="width: auto; display: inline-block;margin:3px" id="form_date_id" value="" name="form_date" class="form-control">
+            </div>
+            <div class="form-group" style="display: inline-block;">
+              <label for="form_date_id" class="requiredField">{% trans "From Date" %} </label>
+              <input type="date" style="width: auto; display: inline-block;" id="form_date_id" value="{{form_date}}" name="form_date" class="form-control">
+            </div>
+            <div class="form-group">
+              <label for="to_date_id" class="requiredField">{% trans "To Date Date" %} </label>
+              <input type="date" style="width: auto; display: inline-block;" id="to_date_id" value="{{to_date}}"  name="to_date" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary " style="margin-left: 2px;width: auto;"><i class="fas fa-search"></i> </button>      
+            <a style="font-weight: bold;margin-left: 12px;" href="{% url "core:get_all_recordings" zoom_app_id=zoom_app_obj.pk %}">
+            RESET
+            </a>
+          </div>
+        </form>
+        <hr>
+        <div class="table-responsive table-bordered">
+          <table class="table" id="table_id">
+            <thead>
+              <tr>
+                <th scope="col">{% trans "Action" %}</th>
+                <th scope="col">{% trans "Topic" %}</th>
+                <th scope="col">{% trans "Start Time" %}</th>
+                <th scope="col">{% trans "File Size" %}</th>
+                <th scope="col">{% trans "Status" %}</th>
+                <th scope="col">{% trans "Links" %}</th>
+                <th scope="col">{% trans "Participants List" %}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for meeting in all_meetings  %}
+              {% with meeting_status=meeting.get_status_of_recording %}
+
+              <tr>
+                  <td>
+                    <div class="dropdown">
+                      <button
+                        class="btn btn-primary dropdown-toggle "
+                        {% if   meeting_status == "DELETED" or  meeting_status == "BEING PROCESSED"  %}disabled{% endif %}
+                        type="button"
+                        id="dropdownMenuButton"
+                        data-mdb-toggle="dropdown"
+                        aria-expanded="false"
+                        >
+                      {{meeting.meeting_id}}
+                      </button>
+                      <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <li><a class="dropdown-item" href="{% url "core:select_youtube_account" meeting_id=meeting.id %}">Upload To YouTube</a></li>
+                        <li><a class="dropdown-item" href="{% url "core:download_recording_files" meeting_id=meeting.id %}">Download Recording</a></li>
+                        <li><a class="dropdown-item" href="#">Upload To Google Drive</a></li>
+                        <li><a class="dropdown-item" href="#">Upload To Dropbox</a></li>
+                      </ul>
+                    </div>
+                  </td>
+                <td>{{meeting.topic}}</td>
+                <td>
+                  <span style="display:none;">{{meeting.start_time.timestamp}}</span>
+                  {{meeting.start_time}}
+                </td>
+                <td>
+                  <span style="display:none;">{{meeting.total_size}}</span>
+                  {{meeting.get_total_size}}  
+                  <br>
+                  {{meeting.recording_count}} Files 
+                </td>
+
+                <td>
+                  {{meeting.get_status_of_recording}}
+                </td>
+                  <td> 
+                    {% if  meeting.get_recording_links %}
+                        
+                    <button type="button" class="btn btn-light btn-sm"  id="youtubeLinks"  onclick="function js_func(){get_links_video('{{meeting.id}}')};js_func();return false;">
+                      <i class="fas fa-external-link-alt fa-2x text-primary"></i>
+                  </button>
+                    
+                    {% endif %}
+                </td>          <td> 
+                  {% if meeting.get_participant_list %}
+                      
+                  
+                    <button type="button" class="btn btn-light btn-sm" data-mdb-toggle="modal" data-mdb-target="#participantsmodel" onclick="function js_func(){get_meeting_participants_list('{{meeting.id}}')};js_func();return false;">
+                      <i class="fas fa-users fa-2x text-dark"></i>
+                  </button>
+                  {% endif %}
+                </td>
+              </tr>
+               {% endwith %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+
+
+<!-- Modal -->
+<div class="modal top fade" id="targetModel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-mdb-backdrop="true" data-mdb-keyboard="true">
+  <div class="modal-dialog modal-xl  modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Upload Links</h5>
+        <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive table-bordered">
+                <table class="table align-middle mb-0 bg-white">
+          <thead class="bg-light">
+            <tr>
+              <th>{% trans "Title" %}</th>
+              <th>{% trans "Recording File" %}</th>
+              <th>{% trans "URL" %}</th>
+              <th>{% trans "Uploaded To" %}</th>
+              <th>{% trans "User" %}</th>
+            </tr>
+          </thead>
+          <tbody id="tableLinksContent">
+            <td colspan="4">
+              {% trans "Nothing is uploded" %}
+
+            
+            <td>
+          </tbody>
+        </table>
+      </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">
+            {% trans "Close" %}
+          
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="modal top fade" id="participantsmodel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-mdb-backdrop="true" data-mdb-keyboard="true">
+  <div class="modal-dialog modal-xl  modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">
+            {% trans "Participants List" %}
+        </h5>
+
+        <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive table-bordered">
+                <table class="table align-middle mb-0 bg-white">
+          <thead class="bg-light">
+            <tr>
+              <th>{% trans "User ID" %} </th>
+              <th>{% trans "Name" %}</th>
+              <th>{% trans "Email" %}</th>
+              <th>{% trans "Join Time" %}  </th>
+              <th>{% trans "Leave Time" %}  </th>
+              <th>{% trans "Status" %}</th>
+            </tr>
+          </thead>
+          <tbody id="tableParticipantsListContent">
+            <td colspan="6">
+              {% trans "Nothing is uploded" %}
+
+            
+            <td>
+          </tbody>
+        </table>
+      </div>
+      </div>
+      <div class="modal-footer">
+        <span id="csvFileLink"></span>
+          
+        <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">
+          
+           {% trans "Close" %}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
+
+<script type="text/javascript">
+    let tableLinksContent= document.getElementById("tableLinksContent");
+    let tableParticipantsListContent= document.getElementById("tableParticipantsListContent");
+    let csvFileLink= document.getElementById("csvFileLink");
+  function get_meeting_participants_list (meetingID) {
+         $.ajax({
+            type:'GET',
+            url: window.location.origin + "/get-meeting-participants-list/"+meetingID+"/",
+            success: function(response){
+
+              let dataTable="";
+              console.log(response.playload)
+              for (i in response.playload){
+                console.log(response.playload[i].user_id)
+                let join_time=new Date(response.playload[i].join_time)
+                let leave_time=new Date(response.playload[i].leave_time)
+                let rowData= `<tr>
+                  <td>${response.playload[i].user_id}</td>
+                  <td>${response.playload[i].name}</td>
+                  <td>${response.playload[i].user_email}</td>
+                  <td>${join_time.toLocaleString()}</td>
+                  <td>${leave_time.toLocaleString()}</td>
+                  <td>${response.playload[i].status}</td></tr>
+                  `
+                dataTable=dataTable+rowData
+  
+              }
+              let fileLink=window.location.origin + "/get-participant-reports-csv/"+meetingID+"/"
+              csvFileLink.innerHTML=`<a target="_blank" href="${fileLink}" type="button" class="btn btn-primary" >
+                Download Participants List
+              </a>
+`
+              tableParticipantsListContent.innerHTML=dataTable
+
+
+              $('#participantsmodel').modal('show')
+
+
+            },
+            error: function(error){
+                alert('Ups... something went wrong while uploading');
+          
+            },
+ 
+        })
+    
+  }
+  function get_links_video (meetingID) {
+     $.ajax({
+            type:'GET',
+            url: window.location.origin + "/get-links-video/"+meetingID+"/",
+            success: function(response){
+              let dataTable="";
+              for (i in response.playload){
+                let rowData= `<tr>
+                  <td>${response.playload[i].title}</td>
+                  <td>${response.playload[i].recordingFile}</td>
+                  <td><a href="${response.playload[i].url}" target="_blank">${response.playload[i].url}</a></td>
+                  <td> <i class="fab fa-youtube fa-fw fa-2x text-danger"></i></td>
+                  <td>${response.playload[i].username}<br/>${response.playload[i].full_name}</td></tr>
+                  `
+                dataTable=dataTable+rowData
+  
+              }
+              tableLinksContent.innerHTML=dataTable
+
+
+              $('#targetModel').modal('show')
+
+
+            },
+            error: function(error){
+                alert('Ups... something went wrong while uploading');
+          
+            },
+ 
+        })
+    
+  }
+
+
+
+$('#targetModel').on('hidden.bs.modal', function (e) {
+
+  tableLinksContent.innerHTML=`<td colspan="4">Nothing is uploded<td>`;
+  console.log("clear all things")
+})
+
+$('#participantsmodel').on('hidden.bs.modal', function (e) {
+
+  tableParticipantsListContent.innerHTML=`<td colspan="4">Nothing is uploded<td>`;
+  console.log("clear all things")
+})
+
+
+
+  let table = new DataTable('#table_id', {
+
+     
+   "aoColumnDefs": [{'aTargets': [ 0,3,5,6 ] } ], order:[
+    [2, 'desc']], });
+
+
+     $('#SearchBox').keyup(function(){ table.search($
+    (this).val()).draw() ; })
+  
+</script>
+{% endblock %}

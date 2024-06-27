@@ -1,0 +1,72 @@
+
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+
+{% block title %}{% trans "All Orders" %}{% endblock %}
+
+{% block content %}
+  <div class="container my-4">
+      <section class="mb-4">
+        <div class="card">
+          <div class="card-header text-center py-3">
+            <h3 class="mb-0 text-center">
+              <strong>All Orders</strong>
+            </h3>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover text-nowrap">
+                <thead>
+                  <tr>
+                     <th scope="col">ID</th>
+                    <th scope="col">User</th>
+                    <th scope="col">Subscription</th>
+                    <th scope="col">Paid</th>
+
+                    <th scope="col">Cost</th>
+                    <th scope="col">Created</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for order in orders_all %}
+                    <tr>
+                      <td>
+                        <a href="#" class="btn btn-primary btn-sm" role="button" >
+                          {{order.id}}
+                        </a></td>
+                      <td>
+                        <b>
+                          {{order.user.username}}
+                        </b>
+                        <br>
+                      {{order.user.get_full_name}}</td>
+                      <td>
+                          {{order.subscriptionplan.name}}
+                          <br>
+                          [ {{order.get_subscriptionplan_type_display}} ]
+                        </td>
+                      <td>
+
+             {% if order.paid %}
+                            <span class="badge bg-success">Paid</span>
+                          {% else %}
+                            <span class="badge bg-danger">Not Paid</span>
+                          {% endif %}
+                        </td>
+                                  <td>{{order.cost}} {{users_response.user.last_name}}</td>
+                      <td>{{order.created}}</td>
+                    </tr>
+                    
+                  {% endfor %}
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+  </div>
+{% endblock %}
+      

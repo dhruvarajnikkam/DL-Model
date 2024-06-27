@@ -1,0 +1,16 @@
+**/__pycache__/
+.venv/
+.env
+env
+*.sqlite3
+db.sqlite3-journal
+dump.rdb
+client_secret.json
+client_secret1.json
+temp.MD
+django.po
+django.mo
+media_root
+temp.md
+locale
+

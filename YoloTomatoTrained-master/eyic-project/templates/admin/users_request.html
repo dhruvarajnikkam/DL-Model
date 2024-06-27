@@ -1,0 +1,50 @@
+
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "User Request" %}{% endblock %}
+
+{% block content %}
+  <div class="container my-4">
+      <section class="mb-4">
+        <div class="card">
+          <div class="card-header text-center py-3">
+            <h5 class="mb-0 text-center">
+              <strong>{% trans "User Request" %}</strong>
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover text-nowrap">
+                <thead>
+                  <tr>
+                     <th scope="col">ID</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Name</th>
+
+                    <th scope="col">Comment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for users_response in users_response_all %}
+                    <tr>
+                      <td><a href="#" class="btn btn-primary btn-sm" role="button" data-mdb-toggle="tooltip" title="Click Here To View Request" data-mdb-toggle="button">1</a></td>
+                      <td>{{users_response.user.username}}</td>
+                      <td>{{users_response.user.email}}</td>
+                      <td>{{users_response.user.first_name}} {{users_response.user.last_name}}</td>
+                      <td>{{users_response.message}}</td>
+                    </tr>
+                    
+                  {% endfor %}
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+  </div>
+{% endblock %}
+      

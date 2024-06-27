@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Subscriptions List{% endblock %}
+{% block content %}
+  <!--Section: Minimal statistics cards-->
+  <section>
+    <div class="card-header ">
+      <h1 class="mb-0 text-center"><strong>
+        Subscriptions Dashboard
+        </strong>
+      </h1>
+    </div>
+    <br>
+    <div class="row">
+   
+
+
+{% for subscription_obj in subscription_plans_all %}
+      <div class="col-xl-4 col-sm-6 col-12 mb-4">
+        <div class="card text-white bg-{{ subscription_obj.get_label_colour_display }}" >
+          <div class="card-header"><br><h3>
+            {{subscription_obj.name}}
+             <a href="{% url "administrations:edit_subscription" subscription_obj.pk %}" class="btn btn-primary btn-sm float-right" style="float: right;" role="button" >Edit</a>
+          </h3>
+           
+          </div>
+          <div class="card-body">
+            <span class="card-title">
+              <h3>Features </h3>
+              <ol>
+              {% for permissions in subscription_obj.group.permissions.all %}
+                <li>{{permissions.natural_key.0}}</li>
+              {% endfor %}
+              </ol>
+
+            <p class="card-text">{{subscription_obj.description}}</p>
+          </div> 
+          <div class="card-footer text-center">
+            {% if subscription_obj.monthly_price %}
+                 <button type="button" class="mt-1 btn btn-primary btn-rounded bg-lg">Monthly: $ {{subscription_obj.monthly_price}}</button>
+            {% endif %}
+                
+            {% if subscription_obj.yearly_price %}
+         <button type="button" class="mt-1 btn btn-dark btn-rounded bg-lg">Yearly:  $ {{subscription_obj.yearly_price}}</button>
+            {% endif %}
+            {% if subscription_obj.one_time_price %}
+            
+         <button type="button" class="mt-1 btn btn-danger  btn-rounded bg-lg">One-Time:  $ {{subscription_obj.one_time_price}}</button>
+            {% endif %}
+
+          </div>
+        </div>
+      </div>
+    {% endfor %} 
+
+    </div>
+  </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}

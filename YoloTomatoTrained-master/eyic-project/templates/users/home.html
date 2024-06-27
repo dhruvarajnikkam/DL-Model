@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Home Page" %}{% endblock %}
+{% block content %}
+<div class="container my-4">
+
+  {% if user_zoom_apps %}
+  <section class="mb-4">
+    <div class="card">
+    {% comment "language seeting" %}
+        
+  
+      {% get_current_language as CURRENT_LANGUAGE %}
+      {% get_available_languages as AVAILABLE_LANGUAGES %}
+      {% get_language_info_list for AVAILABLE_LANGUAGES as languages %}
+      <div class="languages">
+        <p>{% trans "Language" %}:</p>
+        <ul class="languages">
+          {% for language in languages %}
+            <li>
+              <a href="/{{ language.code }}/"
+                {% if language.code == CURRENT_LANGUAGE %} class="active"{% endif %}>
+                {{ language.name_local }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+          {% endcomment %}
+      <div class="card-header py-3">
+        <h3 class="mb-0 text-center"><strong>{% trans "Your Zoom Apps" %}
+          <span class="text-primary" style="float:right">
+
+          <a href="https://zoom.us/oauth/authorize?response_type=code&client_id={{CLIENT_ID}}&redirect_uri={{REDIRECT_BASE_URI}}"
+           rel="noopener noreferrer">
+          <img src="https://marketplacecontent.zoom.us/zoom_marketplace/img/add_to_zoom.png" height="35" alt="Add to ZOOM" /></a>
+          </span>
+          </strong>
+        </h3>
+      </div>
+      <div class="card-body">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+          {% for zoom_app in user_zoom_apps %}
+          <div class="col">
+            <div class="card">
+              <img src="{{zoom_app.thumbnail}}" class="card-img-top" alt="Hollywood Sign on The Hill"/>
+              <div class="card-body">
+                <a href="{% url "core:get_all_recordings" zoom_app_id=zoom_app.pk %}">
+                <h5 class="card-title">{{zoom_app.first_name}} {{zoom_app.last_name}}</h5>
+                </a>
+                <p class="card-text">
+                <ul>
+                   <li>{% trans "Account Number :" %} : {{zoom_app.account_number}} </li>
+                  <li>{% trans "Zoom ID :" %}{{zoom_app.zoom_id}} </li>
+                  <li>{% trans "Email :" %}{{zoom_app.email}} </li>
+
+                </ul>
+                <div class="dropdown">
+                  <div class="modal" id="emailModel{{zoom_app.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel">
+                          {% trans "Enter Username" %}</h5>
+                          <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <form class="d-flex justify-content-center" id="form-email-user" data-zoom-id="{{zoom_app.id}}" onsubmit="function js_func(){get_user_email('{{ zoom_app.id }}')};js_func();return false;">
+                            {% csrf_token %}
+                            <input type="text" name="search" required="" placeholder="Enter Username" aria-label="Search" class="form-control" id="userEmail{{zoom_app.id}}">
+                            <button class="btn btn-primary btn-sm my-0 p" type="submit">
+                            <i class="fas fa-plus"></i>
+                            </button>
+                          </form>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="btn-group" role="group" aria-label="Basic example">
+                    <button type="button" class="btn btn-primary" data-mdb-toggle="modal" data-mdb-target="#emailModel{{zoom_app.id}}"> {% trans "Share Account" %}</button>
+                      <a href="{% url "core:delete_zoom_account" zoom_app_id=zoom_app.pk %}" class="btn btn-danger" >Delete</a>
+                  </div>
+
+                  <div>
+                    {% trans "Shared By" %}
+                    
+                    <hr/>
+                    {% for zoom_user in zoom_app.shared_by.all %}
+                    <a href="{% url "core:remove_user_zoom_account" zoom_app_id=zoom_app.id user_id=zoom_user.id %}">
+                    <img  data-mdb-toggle="tooltip" data-mdb-placement="top" title="{{zoom_user.email}}   {{zoom_user.get_full_name}}" src="https://ui-avatars.com/api/?name={{zoom_user.first_name}}+{{zoom_user.last_name}}&size=128&bold=true&background=random" class="rounded-circle" height="30"
+                      alt="" loading="lazy" />
+                      </a>
+                    {% endfor %}
+                  </div>
+                </div>
+                </p>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </section>
+  {% else %}
+    <section class="mb-4">
+    <div class="card">
+      <div class="card-header py-3">
+        <h3 class="mb-0 text-center"><strong>
+          {% trans "Welcome To zzRec Let's Connect Your " %}
+          <span class="text-primary">
+          Zoom Account    <span class="text-primary" style="float:right">
+          <a href="https://zoom.us/oauth/authorize?response_type=code&client_id={{CLIENT_ID}}&redirect_uri={{REDIRECT_BASE_URI}}"
+           rel="noopener noreferrer">
+          <img src="https://marketplacecontent.zoom.us/zoom_marketplace/img/add_to_zoom.png" height="35" alt="Add to ZOOM" /></a>
+          </span>
+          </span>
+          </strong>
+        </h3>
+      </div>
+      <center>
+        <div class="card-body">
+          <img src="{% static ' ' %}" height="300" width="300">
+        </div>
+        <h5 class="mb-3">
+
+          To use <b>zzRec</b> Check recordings upload to Drive Youtube Dropbox
+        </h5>
+      </center>
+      <br>
+      <br>
+    </div>
+    </div>
+  </section>
+  {% endif %}
+  {% if share_zoom_apps %}
+  <section class="mb-4">
+    <div class="card">
+      <div class="card-header py-3">
+        <h3 class="mb-0 text-center"><strong>
+          {% trans "Shared Zoom Apps" %}
+          </strong>
+        </h3>
+      </div>
+      <div class="card-body">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+          {% for zoom_app in share_zoom_apps %}
+          <div class="col">
+            <div class="card">
+              <img src="{{zoom_app.thumbnail}}" class="card-img-top" alt="zoom image"/>
+              <div class="card-body">
+                <a href="{% url "core:get_all_recordings" zoom_app_id=zoom_app.pk %}">
+                <h5 class="card-title">{{zoom_app.first_name}} {{zoom_app.last_name}}</h5>
+                </a>
+                <p class="card-text">
+                <ul>
+                  <li>{% trans "Account Number :" %} : {{zoom_app.account_number}} </li>
+                  <li>{% trans "Zoom ID :" %}{{zoom_app.zoom_id}} </li>
+                  <li>{% trans "Email :" %}{{zoom_app.email}} </li>
+                </ul>
+                </p>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+</div>
+<script type="text/javascript">
+  function get_user_email(zoomAppId) {
+    let csrftoken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+    let userEmail=document.getElementById("userEmail"+zoomAppId);
+    
+    data = JSON.stringify({
+      email: userEmail.value,
+    })
+    console.log(data)
+    let response = fetch(window.location.origin+`/add-user-account/${zoomAppId}/?qusername=${userEmail.value}`, {
+      method: 'GET',
+    })
+    response.then(response => response.json())
+    response.then(data => {
+      console.log(data)
+      if (data.ok) {
+        location.reload()
+      } else {
+        alert("User Not Found");
+      }
+        
+    });
+  }
+</script>
+{% endblock %}

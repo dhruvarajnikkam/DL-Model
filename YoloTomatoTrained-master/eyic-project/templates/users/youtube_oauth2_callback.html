@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Home Page{% endblock %}
+{% block content %}
+<div class="container my-4">
+  <section class="mb-4">
+    <div class="card">
+      <div class="card-header py-3">
+        <h3 class="mb-0 text-center"><strong>Add Youtube Account
+          <span class="text-primary" style="float:right">
+          <a href="{{authorization_url}}"
+            target="_blank" rel="noopener noreferrer" class="btn btn-danger btn-rounded">  <i class="fab fa-youtube fa-fw "></i> Add </a>
+          </span>
+          </strong>
+        </h3>
+      </div>
+      <div class="card-body">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+    
+          <div class="col">
+            <div class="card">
+              <img src="{{zoom_app.thumbnail}}" class="card-img-top" alt="Hollywood Sign on The Hill"/>
+              <div class="card-body">
+                <a href="">
+                <h5 class="card-title">{{zoom_app.first_name}} {{zoom_app.last_name}}</h5>
+                </a>
+                <p class="card-text">
+                <ul>
+                  <li>Account Number:{{zoom_app.account_number}} </li>
+                  <li>Zoom ID :{{zoom_app.zoom_id}} </li>
+                  <li>Email :{{zoom_app.email}} </li>
+                </ul>
+
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+<script type="text/javascript">
+
+</script>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+{% block title %}{% trans "Profile" %}{% endblock %}
+
+{% block content %}
+    <div class="container my-4 mw-1">
+        <h1>{% trans "Profile" %}</h1>
+
+        <form method="POST">
+            {% csrf_token %} 
+            {{ form|crispy }}
+            <button style="border-radius:2rem;" class="btn btn-success d-block mt-4" type="submit" name="action">{% trans "Update Profile" %}</button>
+            <a style="border-radius:2rem;" href="{% url 'account_email' %}" class="btn btn-default">{% trans "Change Email" %}</a>
+            <a style="border-radius:2rem;" href="{% url 'account_change_password' %}" class="btn btn-default">{% trans "Change Password" %}</a>
+            <a style="border-radius:2rem;" href="{% url 'socialaccount_connections' %}" class="btn btn-light">{% trans "Connections" %}</a>
+
+        </form>
+    </div>
+{% endblock %}

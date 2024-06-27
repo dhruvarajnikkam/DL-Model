@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %} 
+{% load core_extras %}
+{% block title %}{% trans "Download Recording" %}{% endblock %}
+{% block content %}
+<div class="container my-4">
+  <section class="mb-4">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url "core:home" %}">{% trans "Home" %}</a></li>
+        <li class="breadcrumb-item"><a href="{% url "core:get_all_recordings" zoom_app_id=meeting_obj.zoom_app.pk %}"> {% trans "All Recordings" %}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{% trans "Download Recording" %}
+          : <b>{{meeting_obj.topic}}</b>
+        </li>
+      </ol>
+    </nav>
+    <div class="card">
+      <div class="card-header py-3">
+        <h3 class="mb-1 text-center"><strong>{% trans "Select Download Recording" %}
+          <a >
+          <button type="button" style="float:right;" class="btn btn-rounded btn-primary" id="downloadRecordingBtn">
+         {% trans "Download Recording" %}
+          </button> 
+          </a> </strong>
+        </h3>
+        <hr>
+      </div>
+      <div class="card-body">
+        {% regroup recording_files by start_time as newlist %}
+        {% for x in newlist %}
+        <li class="list-group-item d-flex justify-content-between align-items-center mt-4">
+          <div class="d-flex align-items-center"  >
+            <span class="rounded-circle">
+            <i class="fas fa-record-vinyl fa-1x"></i>
+            </span>
+            <div class="ms-3" >
+              <p class="fw-bold mb-0">
+                <span style="font-size:140%">
+                  {% trans "Recording No." %}
+                 {{forloop.counter}} 
+                </span>
+                (Start Time: <span class="text-muted">
+                {{ x.grouper }}
+                </span>)
+              </p>
+            </div>
+          </div>
+        </li>
+        {% for recording_file in x.list %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center"  >
+            <input class="form-check-input" type="checkbox" style="margin-right: 7px;"  name="recording_file" datalink="{{recording_file.get_download_file_url}}"
+
+
+             value="{{recording_file.id}}" id="recording_file{{recording_file.id}}">
+            <span class="rounded-circle">
+            {% if recording_file.file_type == "MP4" %}
+            <i class="fas fa-video fa-1x"></i>
+            {% elif recording_file.file_type == "M4A" %}
+            <i class="fas fa-music fa-1x"></i>
+            {% elif recording_file.file_type == "CC" %}
+            <i class="far fa-closed-captioning fa-1x"></i>
+            {% elif recording_file.file_type == "CHAT" %}
+            <i class="far fa-comment-alt fa-1x"></i> 
+           {% elif recording_file.file_type == "VTT" %}
+            <i class="fas fa-bars fa-1x"></i>
+
+
+            {% endif %}
+            </span>
+            <div class="ms-3" >
+              <p class="fw-bold mb-0">{{recording_file.recording_type}} 
+                (<span class="text-danger">
+                {{recording_file.file_type}}
+                </span>)
+                <span class="badge badge-primary text-primary">
+                {{recording_file.get_file_size}}</span>
+              </p>
+              <p class="text-muted mb-0">
+                <a href="{{recording_file.get_download_file_url}}" target="_self">Download </a>
+              </p>
+            </div>
+          </div>
+        </li>
+        {% endfor %}
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+</div>
+<script type="text/javascript">
+  downloadRecordingBtn=document.getElementById('downloadRecordingBtn');
+  function getAllRecordingFileList (node_list) {
+    console.log("node_list",node_list)
+    for (var i = 0; i < node_list.length; i++) {
+
+      window.open(node_list[i].getAttribute("datalink"),"_self")
+    }
+  }  
+
+  function downloadRecording(e){
+
+    let recordingFile = document.querySelectorAll('input[name=recording_file]:checked');
+
+
+
+    if (recordingFile.length==0) {
+      alert("Please Select a Aleast recordingFile to upload");
+    }else{
+      getAllRecordingFileList(recordingFile);
+
+    }
+
+  }
+  downloadRecordingBtn.addEventListener("click", (e)=>{downloadRecording(e)});
+  
+
+</script>
+  
+  
+</script>
+{% endblock %}

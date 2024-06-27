@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Subscription Plans{% endblock %}
+
+{% block content %}
+  <div class="container my-4">
+      <!-- Section: Main chart -->
+      <section class="mb-4">
+<table class="table align-middle mb-0 bg-white">
+  <thead class="bg-light">
+    <tr>
+      <th>File Name</th>
+      <th>Upload Date</th>
+      <th>Status</th>
+      <th>Scheduled</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        aug212020.csv
+      </td>
+      <td>
+        <p class="fw-normal mb-1">21 August 2021</p>
+      </td>
+      <td>
+        
+      <button type="button" class="btn btn-link btn-sm btn-rounded">
+          Running
+        </button>
+      </td>
+      <td>No</td>
+      <td>
+        <button type="button" class="btn btn-link btn-sm btn-rounded">
+          Edit
+        </button>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        aug212020.csv
+      </td>
+      <td>
+        <p class="fw-normal mb-1">21 August 2021</p>
+      </td>
+      <td>
+        
+      <button type="button" class="btn btn-link btn-sm btn-rounded">
+          Completed
+        </button>
+      </td>
+      <td>Yes</td>
+      <td>
+        <button type="button" class="btn btn-link btn-sm btn-rounded">
+          Edit
+        </button>
+      </td>
+    </tr>
+
+  </tbody>
+</table>
+      </section>
+
+  </div>
+{% endblock %}

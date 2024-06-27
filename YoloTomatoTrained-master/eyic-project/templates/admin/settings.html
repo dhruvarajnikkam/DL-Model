@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Website Settings {% endblock %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+{% block content %}
+<div class="container my-4">
+  <section class="mb-4">
+    <div class="card">
+      <div class="card-header py-3">
+        <h3 class="mb-0 text-center"><strong>Website Settings 
+          <span class="text-primary" style="float:right">
+          </span>
+          </strong>
+        </h3>
+      </div>
+      <div class="card-body">
+    <div class="row">
+          <form method="POST" action="">
+            {% csrf_token %}
+            <div class="row g-3">
+              {% for field in form %}
+              <div class="col-sm-6">
+                {{ field|as_crispy_field }}
+              </div>
+              {% endfor %}
+            </div>
+            <br >
+            <hr>
+                <button
+      type="submit"
+      class="btn btn-primary btn-lg"
+    >
+      <i class="fas fa-pen"></i>
+      {% trans "Update Changes" %} 
+    </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Update User" %}{% endblock %}
+{% load crispy_forms_tags %}
+{% block content %}
+<style type="text/css">
+.invalid-feedback, .invalid-tooltip {
+    position: inherit;
+    display: none;
+    font-size: .875rem;
+</style>
+<div class="container my-4">
+  <section class="mb-4">
+    <div class="card">
+      <div class="card-header text-center py-3">
+        <h2 class="mb-0 text-center">
+          <strong>{% trans "Update User" %}</strong>
+        </h2>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <form method="POST" action="">
+            {% csrf_token %}
+            <div class="row g-3">
+              {% for field in form %}
+              <div class="col-sm-6">
+                {{ field|as_crispy_field }}
+              </div>
+              {% endfor %}
+            </div>
+            <br >
+            <hr>
+                <button
+      type="submit"
+      class="btn btn-primary btn-block btn-lg"
+    >
+      <i class="fas fa-edit"></i>
+      {% trans "Update User" %} 
+    </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock content%}
+

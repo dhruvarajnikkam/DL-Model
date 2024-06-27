@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Result{% endblock %}
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-doughnutlabel@1.0.2/dist/chartjs-plugin-doughnutlabel.min.js"></script>
+<br>
+<h3 class="display-4">Field Zone
+<button onclick="window.print()"  style="float:right" class="btn btn-primary"><i class="fas fa-arrow-down me-3"></i>   Download Report</button>
+</h3>
+
+<br>
+<div class="row">
+  <div class="col-sm-6 col-lg-6">
+    <div class="chart-container text-center" style="width:500px" >
+      <canvas id="myChart"></canvas>
+    </div>
+    <div class="chart-container text-center" style="width:500px" >
+     <canvas id="myChart"></canvas>
+    </div>
+  </div>
+  <div class="col-6 col-lg-6">
+    <div>
+      <h3 class="display-5">Predictions</h3>
+      <hr>
+      <br />
+      <ul class="list-group">
+        <li
+          class="list-group-item d-flex justify-content-between align-items-center"
+          >
+          Area under Good Graphs
+          <span
+            class="btn btn-success btn-sm"
+            style="font-size: 120%"
+            >
+          {{good_crops_percetage}} %
+          </span>
+        </li>
+        <li
+          class="list-group-item d-flex justify-content-between align-items-center"
+          >
+          Area under Bad Graphs
+          <span class="btn btn-danger   btn-sm" style="font-size: 120%">
+          {{bad_crops_percetage}} %
+          </span>
+        </li>
+        <li
+          class="list-group-item d-flex justify-content-between align-items-center"
+          >
+          pH Farm
+
+          <span class="btn btn-light  btn-sm" style="font-size: 120%;background:#e8aeae">
+          {{farmer_video.ph_farm}} 
+          </span>
+        </li>
+        <li
+          class="list-group-item d-flex justify-content-between align-items-center"
+          >
+          Moisture In Farm
+
+          <span class="btn btn-light  btn-sm" style="font-size: 120%;background:#e8aeae">
+           {{farmer_video.moisture_farm}} %
+          </span>
+        </li>
+        <li
+          class="list-group-item d-flex justify-content-between align-items-center"
+          >
+          Temperature
+
+
+
+          <span class="btn btn-light  btn-sm" style="font-size: 120%;background:#aaf2aa">
+          {{farmer_video.temperature}} C
+          </span>
+        </li>
+        <li
+          class="list-group-item d-flex justify-content-between align-items-center"
+          >
+          Total Amount Salt
+
+
+
+          <span class="btn btn-light  btn-sm" style="font-size: 120%;background:#aaf2aa">
+          {{farmer_video.total_amt_salt}} ppm
+          </span>
+        </li>
+
+
+
+        <li
+          class="list-group-item d-flex justify-content-between align-items-center text-center"
+          >
+          Disease Detected Spots
+          <div class="btn-group" role="group" aria-label="Basic example">
+            {%for key in key_of_dict %}
+            <button type="button" class="btn btn-sm btn-light">{{key}}</button>
+            {% endfor %}
+          </div>
+    </div>
+    <br>
+   </div>
+  </li>
+  </ul>
+  <br>
+  <br>
+  <hr>
+  {% for des in model_disease_dict %}
+  <div class="card" >
+
+
+  
+    <div class="card-body ">
+
+    <div class="d-flex align-items-start bg-light mb-3" >
+  <div class="col"><h1 class="card-title mt-5 text-center">{{des.name}}</h1></div>
+  <div class="col">    <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
+    <img src="{{des.image.url}}" class="img-fluid" />
+    <a href="#!">
+      <div class="mask" style="background-color: rgba(251, 251, 251, 0.15)"></div>
+    </a>
+  </div></div>
+</div>
+      
+      <div class="card-text">
+
+      
+        {{des.description|linebreaks}}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+</div>
+<script
+  src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+  integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+  crossorigin="anonymous"
+  ></script>
+<script
+  src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+  integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+  crossorigin="anonymous"
+  ></script>
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+  integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+  crossorigin="anonymous"
+  ></script>
+<script>
+  var ctx = document.getElementById("myChart").getContext("2d");
+  
+  var myChart = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels:{{key_of_dict|safe}},
+      datasets: [
+        {
+          label: "No Of Disease Detacted ",
+  
+         data: {{val_of_dict|safe}},
+          backgroundColor: [
+            "rgba(0,183,74,0.2)",
+            "rgba(255, 0, 0, 0.2)",
+            "rgba(255, 206, 86, 0.2)",
+            "rgba(75, 192, 192, 0.2)",
+            "rgba(0, 0, 255, 0.2)",
+          ],
+          borderColor: [
+            "rgba(0,183 ,4,1)",
+            "rgba(255, 0, 0, 1)",
+            "rgba(255, 206, 86, 1)",
+            "rgba(75, 192, 192, 1)",
+            "rgba(0, 0, 255, 1)",
+          ],
+          borderWidth: 1,
+        },
+      ],
+    },
+  });
+</script>
+{% endblock content %}

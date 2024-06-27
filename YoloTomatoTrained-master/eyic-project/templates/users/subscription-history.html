@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load static %}
+{% load tz %}
+
+{% block title %}Subscription History{% endblock %}
+
+{% block content %}
+{% get_current_timezone as TIME_ZONE %}
+<div class="card border  shadow-0 ">
+  <div class="card-header font-weight-bold">Current Subscription</div>
+  <div class="card-body">
+    <h5 class="card-title">{{user.current_subscriptions.order.get_order_name}}</h5>
+    <p class="card-text">
+      <ul>
+        <li>Next Payment Date:
+          <span class="ml-4">
+        {% if user.current_subscriptions.next_payment_date %}{{user.current_subscriptions.next_payment_date }} {% else %} Unlimited{% endif %}
+        </span>
+      </li>
+        <li>Purchased On
+              <span class="ml-4">
+        {{user.current_subscriptions.created }}
+        </span>
+        </li>
+
+      </ul>
+    </p>
+  </div>
+</div>
+<hr/>
+  <section>
+    <div class="card-header ">
+      <h1 class="mb-0 text-center"><strong>
+        Subscriptions History
+        </strong>
+      </h1>
+    </div>
+    <br>
+    <div class="row">
+      <table class="table table-hover text-nowrap">
+  <thead>
+    <tr>
+      <th scope="col">Order ID</th>
+      <th scope="col">Subscription Plan</th>
+      <th scope="col">Cost</th>
+      <th scope="col">Transaction ID</th>
+      <th scope="col">Payment Date</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    {% for subscription_history in subscription_history_all %}
+      
+
+
+    <tr>
+      <td class="font-weight-bold">
+
+       {{subscription_history.id}}
+      </td>
+      <td>
+        {{subscription_history.subscriptionplan.name}}
+        <br>
+        [ {{subscription_history.get_subscriptionplan_type_display}} ]
+      </td>
+      <td>
+        {{subscription_history.cost}}
+     
+      </td>
+      <td>
+          {{subscription_history.get_paypal_object.txn_id}}
+      </td>
+      <td>
+         {{subscription_history.get_paypal_object.payment_date|localtime}}
+
+      </td>
+    </tr>
+
+        {% endfor %}
+   
+  </tbody>
+</table>
+
+    </div>
+  </section>
+
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load account socialaccount %} 
+{% load crispy_forms_tags %} 
+{% load static %} 
+{% block title %}{% trans "Sign In"%}{% endblock title %}
+{% block content_main %}
+<header>
+  <style>
+    #intro {
+      background-image: url("{% static "images/Tomato_image.gif" %}");
+      height: 100vh;
+    }
+
+    /* Height for devices larger than 576px */
+    @media (min-width: 992px) {
+      #intro {
+        margin-top: -58.59px;
+      }
+    }
+
+    .navbar .nav-link {
+      color: #fff !important;
+    }
+  </style>
+  <br />
+  <br />
+  <div id="intro" class="bg-image shadow-2-strong">
+    <!-- <div class="mask d-flex align-items-center h-100" style="background-color: rgba(0, 0, 0, 0.8);"> -->
+    <div class="mask d-flex align-items-center h-100">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-xl-5 col-md-8">
+            <form
+              class="bg-white rounded shadow-5-strong p-5"
+              method="POST"
+              action="{% url 'account_signup' %}"
+            >
+              <h1>{% trans "Sign Up" %}</h1>
+              <p>
+                {% blocktrans %}Already have an account? Then please
+                <a href="{{ login_url }}">sign in</a>.{% endblocktrans %}
+              </p>
+
+              {% csrf_token %} {{ form|crispy }} {% if redirect_field_value %}
+              <input
+                type="hidden"
+                name="{{ redirect_field_name }}"
+                value="{{ redirect_field_value }}"
+              />
+              {% endif %}
+              <br />
+              <a
+                class="btn btn-default"
+                href="{% url 'account_reset_password' %}"
+                >{% trans "Forgot Password?" %}</a
+              >
+              <button class="btn btn-primary" type="submit">
+                {% trans "Sign Up" %}
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Background image -->
+</header>
+{% endblock content_main %}

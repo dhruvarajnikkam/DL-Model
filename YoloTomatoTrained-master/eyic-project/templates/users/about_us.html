@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+{% load core_extras %}
+{% block title %}{% trans "About" %}{% endblock %}
+{% block content %}
+<div class="container my-4">
+
+  <section class="mb-4">
+    <div class="card">
+      <div class="card-header py-3 text-center">
+        <h1>About</h1>
+      </div>
+      <div class="card-body">
+        {{about_admin.content|safe}}
+
+      </div>
+    </div>
+  </section>
+
+
+
+</div>
+
+{% endblock %}

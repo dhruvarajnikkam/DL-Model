@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Report Table{% endblock %}
+{% block content %}
+
+    <br>
+     <h3 class="display-4">Report Table</h3>
+  <br>
+  <hr>
+
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th scope="col">Sr. No</th>
+      <th scope="col">Video</th>
+      <th scope="col">Status</th>
+      <th scope="col">Created</th>
+      <th scope="col">Link</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for video in farmer_video %}
+    <tr>
+      <th scope="row">{{forloop.counter }}</th>
+      <td>{{video.video}}</td>
+      <td>{{video.status}}</td>
+      <td>{{video.created}}</td>
+      <td>
+  {% if video.status == "processing"  %}     
+  <a href="#"    class="btn btn-sucess btn-sm active" role="button" aria-pressed="true">Please Wait for Result</a>
+
+  {% else %}
+  <a href="{% url "core:results" video.id  %}"    class="btn btn-primary btn-sm active" role="button" aria-pressed="true">View Result</a>
+  
+
+{% endif %}
+     
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+
+</table>
+
+{% endblock content %}

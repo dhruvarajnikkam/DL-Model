@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %} 
+{% block title %}{% trans "Select Youtube Account" %}{% endblock %}
+{% block content %}
+<div class="container my-4">
+  <section class="mb-4">
+    <nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url "core:home" %}">
+{% trans "Home" %}
+    </a></li>
+    <li class="breadcrumb-item"><a href="{% url "core:get_all_recordings" zoom_app_id=meeting_obj.zoom_app.pk %}">
+{% trans "All Recordings" %}
+     </a></li>
+    <li class="breadcrumb-item active" aria-current="page">{% trans "Uploading Recording" %}
+        : <b>{{meeting_obj.topic}}</b></li>
+  </ol>
+</nav>
+    <div class="card">
+      <div class="card-header py-3">
+        <h3 class="mb-1 text-center"><strong>{% trans "Select Youtube Account" %} </strong>
+        </h3>
+        <hr>
+        
+      </div>
+      <div class="card-body">
+        <form method="POST" action="" id="uploadYoutubeVideoForm">
+          {% csrf_token %}
+          <div class="row g-3">
+            {% for field in upload_recording %}
+            <div class="col-sm-6">
+              {{ field|as_crispy_field }}
+            </div>
+            {% endfor %}
+          </div>
+          <br >
+          <h3 class="mb-0 text-center"><strong>{% trans "Select Video  Files (mp4)" %} </strong></h3>
+          {% regroup recording_mp4_files by start_time as newlist %}
+             {% for x in newlist %}
+                  <hr>
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center"  >
+                   
+                      <span class="rounded-circle">
+                      <i class="fas fa-record-vinyl fa-1x"></i>
+                      </span>
+                      <div class="ms-3" >
+                        <p class="fw-bold mb-0">
+                          <span style="font-size:140%">
+                            {% trans "Recording No." %}
+                           {{forloop.counter}} 
+                          </span>
+                          ({% trans "Start Time: " %}
+                          <span class="text-muted">
+                          {{ x.grouper }}
+                          </span>)
+                        </p>
+                      </div>
+                    </div>
+                  </li>
+
+          {% for recording_mp4 in  x.list %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center"  >
+              <input class="form-check-input" type="checkbox" style="margin-right: 7px;"  name="recording_file_account" value="{{recording_mp4.id}}" id="recording_file{{recording_mp4.id}}">
+                <span class="rounded-circle">
+                <i class="fas fa-video fa-1x"></i>
+                </span>
+              <div class="ms-3" >
+                <p class="fw-bold mb-0">{{recording_mp4.recording_type}}
+                  <span class="badge badge-primary text-primary">
+                  {% widthratio  recording_mp4.file_size 1000000 1 %} MB</span>
+                </p>
+              </div>
+            </div>
+          </li>
+          {% endfor %}
+          {% endfor %}
+
+
+          <br>
+          <h3 class="mb-1 text-center"><strong>{% trans "Select Youtube Account" %} </strong></h3>
+          {% for user_youtube in youtube_accounts %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center"  >
+              <input class="form-check-input" type="checkbox" style="margin-right: 7px;"  name="google_youtube_account" value="{{user_youtube.id}}" id="id_google_youtube_account_{{user_youtube.id}}">
+              <img src="{{user_youtube.picture_url}}" alt="" style="width: 45px; height: 45px"
+                class="rounded-circle" />
+              <div class="ms-3" >
+                <p class="fw-bold mb-0">{{user_youtube.name}}
+                  <span class="badge badge-primary text-primary">{% trans "Your Account" %}</span>
+                </p>
+                <p class="text-muted mb-0">{{user_youtube.email}}</p>
+              </div>
+            </div>
+          </li>
+          {% endfor %}
+           {% for user_youtube in shared_youtube_accounts %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center"  >
+              <input class="form-check-input" type="checkbox" style="margin-right: 7px;"  name="google_youtube_account" value="{{user_youtube.id}}" id="id_google_youtube_account_{{user_youtube.id}}">
+              <img src="{{user_youtube.picture_url}}" alt="" style="width: 45px; height: 45px"
+                class="rounded-circle" />
+              <div class="ms-3" >
+                <p class="fw-bold mb-0">{{user_youtube.name}}
+                  <span class="badge badge-primary text-primary">
+                  {% trans "Shared Account" %}</span>
+                </p>
+                <p class="text-muted mb-0">{{user_youtube.email}}</p>
+              </div>
+            </div>
+          </li>
+          {% endfor %}
+          <hr>
+          <button type="submit"class="btn btn-light btn-lg">
+          <i class="fab fab fa-youtube text-danger me-1   fa-2x"></i>
+          {% trans "Upload Video " %}
+          
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+</div>
+<script type="text/javascript">
+  let uploadYoutubeVideoForm=document.getElementById('uploadYoutubeVideoForm');
+  
+  function get_accounts_ids (node_list) {
+    let allIds="";
+    for (var i = 0; i < node_list.length; i++) {
+      allIds=allIds+node_list[i].value+','
+    }
+    return allIds;
+  }  
+
+  var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+  
+  
+  function onSubmitForm(e){
+
+    let youtubeAccounts = document.querySelectorAll('input[name=google_youtube_account]:checked');
+    let recordingFileAccount = document.querySelectorAll('input[name=recording_file_account]:checked');
+
+
+
+    if (youtubeAccounts.length==0 || recordingFileAccount.length==0) {
+      alert("Please Select a Aleast Youtube Account and recordingFile to upload");
+    }else{
+      let title=document.getElementById('id_title');
+      let tags=document.getElementById('id_tags');
+      let description=document.getElementById('id_description');
+      let publicStatus =document.getElementById('id_public_status');
+        
+    data = JSON.stringify({
+          "title": title.value,
+          "tags": tags.value,
+          "description": description.value,
+          "public_status": publicStatus.value,
+          "youtube_accounts_ids": get_accounts_ids(youtubeAccounts),
+          "recording_file_ids": get_accounts_ids(recordingFileAccount),
+  
+      })
+
+      let response = fetch("{% url "core:upload_file_to_youtube" meeting_id=meeting_obj.id %}", {
+          method: 'POST',
+          body: data,
+          headers: { 'Accept': 'application/json, text/plain, */*',
+              'Content-Type': 'application/json',
+              "X-CSRFToken": csrftoken },
+      })
+        response.then(response => response.json())
+        response.then(data => {
+          if (data.ok) {
+            window.location.replace("{% url "core:get_all_recordings" zoom_app_id=meeting_obj.zoom_app.id %}");
+             
+          } else {
+            alert("Some Error Occur ");
+          }
+            
+        });
+  
+    }
+    e.preventDefault()
+  }
+  
+  uploadYoutubeVideoForm.addEventListener("submit", (e)=>{onSubmitForm(e)});
+</script>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+
+{% block title %}{% trans "Your YouTube Accounts" %}{% endblock %}
+{% block content %}
+<div class="container my-4">
+  <section class="mb-4">
+    <div class="card">
+      <div class="card-header py-3">
+        <h3 class="mb-0 text-center"><strong>
+          {% trans "Detail of " %}
+          "<span class="text-dark">
+          {{youtube_account.name}}
+          </span>" 
+          <span class="text-primary" style="float:right">
+            <form autocomplete="off">
+            <div style="display: inline-flex;flex-wrap: wrap;align-content: space-between;align-items: baseline;">
+              <div class="form-group" style="display: inline-block;">
+                <input type="text" id="SearchBox" placeholder="{% trans "Username To Share With" %}" style="width: auto; display: inline-block;margin:3px"  value=""autocomplete="off"  name="username" autocomplete="false" class="form-control">
+              </div>
+
+              <button type="submit" class="btn btn-primary " data-mdb-toggle="tooltip" title="{% trans "Make Sharing" %}"  style="margin-left: 2px;width: auto;"><i class="fas fa-plus"></i> </button>      
+             
+            </div>
+          </form>
+          </span>
+          </strong>
+        </h3>
+      </div>
+      <br>
+        <h5 class="text-muted">{% trans "This Youtube Account Is Shared With " %} :</h5>
+      <div class="card-body">
+
+         {% for web_user in youtube_account.shared_by.all  %}
+                  <ul class="list-group list-group-light">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div class="d-flex align-items-center">
+                <img src="{{web_user.get_user_profile_link}}" alt="" style="width: 45px; height: 45px"
+                  class="rounded-circle" />
+                <div class="ms-3">
+                    <p class="fw-bold mb-1">{{web_user.get_full_name}}</p>
+                  <p class="text-muted mb-0">{{web_user.email}}</p>
+                </div>
+              </div>
+                <div  style="float:right;">
+                  <a  data-mdb-toggle="tooltip" data-mdb-placement="left" title="{% trans "remove sharing" %}" href="{% url "core:remove_user_youtube_account" youtube_account_id=youtube_account.id user_id=web_user.id %}" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> </a>
+                </div>
+            </li>
+          </ul>
+
+             {% endfor %}
+  
+      </div>
+    </div>
+  </section>
+</div>
+
+{% endblock %}

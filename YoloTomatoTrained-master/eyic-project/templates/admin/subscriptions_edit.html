@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Subscriptions Edit{% endblock %}
+{% load crispy_forms_tags %}
+{% block content %}
+   {{ selected_permission_list|json_script:"selected_permission_list" }}
+  <section class="container">
+    <div class="card-header ">
+      <h1 class="mb-0 text-center"><strong>
+        Edit Subscription 
+        </strong>
+      </h1>
+          <nav aria-label="breadcrumb" style="font-size: 140%;">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url "administrations:subscriptions_list" %}">Subscription Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{subscription_obj.name}} ({{subscription_obj.id}})</li>
+      </ol>
+    </nav>
+    </div>
+    <br>
+    <div class="row">
+      <form action="" method="POST">
+        {% csrf_token %}
+      {{form|crispy}}
+      <br>
+      <button  type="submit" class="btn btn-md btn-primary btn-block btn-rounded">Save Changes</button>
+      <br>
+      <br>
+        </form>
+    </div>
+  </section>
+<script type="text/javascript">
+  let selectedPermissionList = JSON.parse(document.getElementById('selected_permission_list').textContent);
+  var checkboxes = document.querySelectorAll('input[name="' + "permissions" );
+  for (var i = 0; i < checkboxes.length; i++) {
+    if (selectedPermissionList.includes(checkboxes[i].value)) {
+      checkboxes[i].checked=true;
+    }
+
+  }
+
+</script>
+{% endblock %}
